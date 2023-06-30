@@ -34,4 +34,16 @@ public class ClientController : ControllerBase
 
         return client;
     }
+
+    [HttpPost]
+    public ActionResult Create (Client client)
+    {
+        //agregar en el contexto
+        _context.Clients.Add(client);
+        //guardar 
+        _context.SaveChanges();
+
+        //accionDentroControlador+
+        return CreatedAtAction(nameof(GetById), new {id = client.Id}, client);
+    }
 }
