@@ -19,5 +19,5 @@ public partial class Account
 
     public virtual ICollection<BankTransaction> BankTransactions { get; set; } = new List<BankTransaction>();
 
-    public virtual Client? Client { get; set; }
+    public virtual Client Client { get; set; }
 }
