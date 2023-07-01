@@ -1,5 +1,6 @@
 using System.Text.Json.Serialization;
 using BankAPI.Data;
+using BankAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,6 +16,9 @@ builder.Services.AddSqlServer<MichuBankContext>(builder.Configuration.GetConnect
     //Evitar ciclos
 builder.Services.AddControllers().AddJsonOptions(x =>
                 x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+//Agregando services personalizados - ServiceLayer
+builder.Services.AddScoped<ClientService>();
+builder.Services.AddScoped<AccountService>();
 
 var app = builder.Build();
 

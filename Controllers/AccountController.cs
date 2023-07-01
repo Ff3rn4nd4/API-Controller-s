@@ -1,4 +1,4 @@
-using BankAPI.Data;
+using BankAPI.Services;
 using BankAPI.Data.BankModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,23 +11,23 @@ namespace BankAPI.Controllers;
 public class AccountController : ControllerBase
 {
     //para modificar la base de datos
-    private readonly MichuBankContext _context;
-    public AccountController(MichuBankContext context)
+    private readonly AccountService _service;
+    public AccountController(AccountService account)
     {
-        _context = context;
+        _service = account;
     }
 
     //CRUD
     [HttpGet ("GetAll")]
     public IEnumerable<Account> Get()
     {
-        return _context.Accounts.ToList();
+        return _service.GetAll();
     }
 
     [HttpGet("{id}")]
      public ActionResult<Account> GetById(int id)
     {
-        var account = _context.Accounts.Find(id);
+        var account = _service.GetById(id);
 
         if (account is null)
             return NotFound();
@@ -36,35 +36,26 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("GetByClientId/{ClientId}")]
-     public ActionResult<IEnumerable<Account>> GetByClientId(int? ClientId)
+     public IEnumerable<Account> GetByClientId(int? ClientId)
     {
-        var accounts = _context.Accounts.Where(a => a.ClientId == ClientId).ToList();
-        var nullAccounts = _context.Accounts.Where(a => a.ClientId == null).ToList();
+        var accounts = _service.GetByClientId(ClientId);
 
-        if (ClientId == 0)
-            return nullAccounts;
-        else
-            return accounts;
+        return accounts;
     }
 
     [HttpPost]
     public ActionResult Create (Account account)
     {
-        //checar si existe 
-        var clientExist = _context.Clients.FirstOrDefault(c => c.Id == account.ClientId);
+        var clientExist = _service.ClientExist(account.ClientId);
 
         if (clientExist == null)
             return BadRequest("Ups!, ese cliente no existe"); 
 
-        //agregar en el contexto
-        _context.Accounts.Add(account);
-        //guardar 
-        _context.SaveChanges();
-
-        return CreatedAtAction(nameof(GetById) ,new {id = account.Id}, account);
+        var newAccount = _service.Create(account, clientExist);
+        return CreatedAtAction(nameof(GetById) ,new {id = newAccount}, newAccount);
     }
-
-    [HttpPut ("{id}")]
+    
+    [HttpPut ("{id}/{clientId}")]
     public IActionResult Update(int id, int clientId, Account account)
     {
         if (id != account.Id)
@@ -73,28 +64,39 @@ public class AccountController : ControllerBase
         if (clientId != account.ClientId)
             return BadRequest("No existe este cliente!");
         
-        var existingaccount = _context.Accounts.Find(id);
+        var existingaccount = _service.GetById(account.Id);
         if (existingaccount is null)
             return NotFound();
 
-        //datos que se van a cambiar 
-        existingaccount.AccountType = account.AccountType;
-        existingaccount.ClientId = account.ClientId;
-        existingaccount.Balance = account.Balance;
+        var accountToUpdate = _service.GetById(account.Id);
 
-        _context.SaveChanges();
-        return NoContent();
+        if(accountToUpdate is not null)
+        {
+             _service.Update(id, clientId, account);
+            return NoContent();
+        }else
+            {
+                return NotFound();
+            }
+       
     }
 
     [HttpDelete ("{id}")]
     public IActionResult Delete(int id)
     {
-        var existingaccount = _context.Accounts.Find(id);
+        var existingaccount = _service.GetById(id);
         if (existingaccount is null)
             return NotFound();
 
-        _context.Accounts.Remove(existingaccount);
-        _context.SaveChanges();
-        return Ok();
+        var accountToDelete = _service.GetById(id);
+        if (accountToDelete is not null)
+        {
+            _service.Delete(id);
+            return NoContent();
+        }else  
+            { 
+                return NotFound();
+            }
+       
     }
 }
