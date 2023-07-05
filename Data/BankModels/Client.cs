@@ -13,6 +13,7 @@ public partial class Client
     [MaxLength(40, ErrorMessage = "El numero de telefono no debe de exceder los 40 digitos")]
     public string PhoneNumber { get; set; } = null!;
     [MaxLength(50, ErrorMessage = "El email no debe de exceder los 50 caracteres")]
+    [EmailAddress(ErrorMessage = "El formato de tu email es incorrecto!")]
     public string Email { get; set; }
     
     public DateTime? RegDate { get; set; }
