@@ -31,7 +31,8 @@ public class ClientController : ControllerBase
 
         if (client is null)
             //enviar mensajes de error pero personalizados 
-            return NotFound(new { message = $"Ups!, el cliente con este ID = {id} no existe!." });
+            //return NotFound(new { message = $"Ups!, el cliente con este ID = {id} no existe!." });
+            return ClientNotFound(id);
 
         return client;
     }
@@ -53,7 +54,7 @@ public class ClientController : ControllerBase
         var existingclient = await _service.GetById(client.Id);
         
         if (existingclient is null)
-            return NotFound();
+            return ClientNotFound(id);
 
         var clientToUpdate = _service.GetById(id);
 
@@ -63,7 +64,7 @@ public class ClientController : ControllerBase
             return NoContent();
         }else 
             {
-                return NotFound();
+                return ClientNotFound(id);
             } 
     }
 
@@ -88,5 +89,10 @@ public class ClientController : ControllerBase
             {
                 return NotFound();
             } 
+    }
+
+    public NotFoundObjectResult ClientNotFound(int id)
+    {
+        return NotFound(new { message = $"Ups!, el cliente con este ID = {id} no existe!." });
     }
 }
