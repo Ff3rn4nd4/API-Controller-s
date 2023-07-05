@@ -30,7 +30,8 @@ public class ClientController : ControllerBase
         var client = await _service.GetById(id);
 
         if (client is null)
-            return NotFound();
+            //enviar mensajes de error pero personalizados 
+            return NotFound(new { message = $"Ups!, el cliente con este ID = {id} no existe!." });
 
         return client;
     }
@@ -47,7 +48,7 @@ public class ClientController : ControllerBase
     public async Task<IActionResult> Update(int id, Client client)
     {
         if (id != client.Id)
-            return BadRequest();
+            return BadRequest(new { message = $"Ups!, el ID({id}) de la URL no coincide con el ID({client.Id}) del cuerpo de la solicitud!." });
         
         var existingclient = await _service.GetById(client.Id);
         
