@@ -19,15 +19,15 @@ public class ClientController : ControllerBase
 
     //CRUD
     [HttpGet]
-    public IEnumerable<Client> Get()
+    public async Task<IEnumerable<Client>> Get()
     {
-        return _service.GetAll();
+        return await _service.GetAll();
     }
 
     [HttpGet("{id}")]
-     public ActionResult<Client> GetById(int id)
+     public async Task<ActionResult<Client>> GetById(int id)
     {
-        var client = _service.GetById(id);
+        var client = await _service.GetById(id);
 
         if (client is null)
             return NotFound();
@@ -36,20 +36,20 @@ public class ClientController : ControllerBase
     }
 
     [HttpPost]
-    public ActionResult Create (Client client)
+    public async Task<ActionResult> Create (Client client)
     {
-       var newClient = _service.Create(client);
+       var newClient = await _service.Create(client);
         //accionDentroControlador+
         return CreatedAtAction(nameof(GetById), new {id = newClient.Id}, newClient);
     }
 
     [HttpPut ("{id}")]
-    public IActionResult Update(int id, Client client)
+    public async Task<IActionResult> Update(int id, Client client)
     {
         if (id != client.Id)
             return BadRequest();
         
-        var existingclient = _service.GetById(client.Id);
+        var existingclient = await _service.GetById(client.Id);
         
         if (existingclient is null)
             return NotFound();
@@ -58,7 +58,7 @@ public class ClientController : ControllerBase
 
         if(clientToUpdate is not null)
         {
-            _service.Update(id, client);
+            await _service.Update(id, client);
             return NoContent();
         }else 
             {
@@ -67,9 +67,9 @@ public class ClientController : ControllerBase
     }
 
     [HttpDelete ("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var existingclient = _service.GetById(id);
+        var existingclient = await _service.GetById(id);
         if (existingclient is null)
             return NotFound();
         /*
@@ -81,7 +81,7 @@ public class ClientController : ControllerBase
 
         if(clientToDelete is not null)
         {
-            _service.Delete(id);
+            await _service.Delete(id);
             return NoContent();
         }else 
             {

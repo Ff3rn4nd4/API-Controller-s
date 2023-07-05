@@ -1,5 +1,6 @@
 using BankAPI.Data;
 using BankAPI.Data.BankModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace BankAPI.Services;
 
@@ -12,27 +13,28 @@ public class ClientService
         _context = context;
     }
 
-    public IEnumerable<Client> GetAll()
+    public async Task<IEnumerable<Client>>GetAll()
     {
-        return _context.Clients.ToList();
+        //return _context.Clients.ToList();
+        return await _context.Clients.ToListAsync();
     }
 
-    public Client? GetById(int id)
+    public async Task<Client?> GetById(int id)
     {
-        return _context.Clients.Find(id);
+        return await _context.Clients.FindAsync(id);
     }
 
-    public Client Create(Client newClient)
+    public async Task<Client> Create(Client newClient)
     {
         _context.Clients.Add(newClient);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return newClient;
     } 
 
-    public void Update(int id,Client client)
+    public async Task Update (int id,Client client)
     {
-        var existingclient = GetById(id);
+        var existingclient = await GetById(id);
 
         if (existingclient is not null)
         {
@@ -41,18 +43,18 @@ public class ClientService
             existingclient.PhoneNumber = client.PhoneNumber;
             existingclient.Email = client.Email;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        var clientToDelete = GetById(id);
+        var clientToDelete = await GetById(id);
 
         if (clientToDelete is not null)
         {
              _context.Clients.Remove(clientToDelete);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
