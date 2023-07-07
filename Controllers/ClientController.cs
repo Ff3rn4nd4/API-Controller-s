@@ -6,7 +6,7 @@ namespace BankAPI.Controllers;
 
 //Ruteo
 [ApiController]
-[Route("[Controller]")]
+[Route("Api/[Controller]")]
 
 public class ClientController : ControllerBase
 {
@@ -18,7 +18,7 @@ public class ClientController : ControllerBase
     }
 
     //CRUD
-    [HttpGet]
+    [HttpGet("GetAll")]
     public async Task<IEnumerable<Client>> Get()
     {
         return await _service.GetAll();
@@ -37,7 +37,7 @@ public class ClientController : ControllerBase
         return client;
     }
 
-    [HttpPost]
+    [HttpPost("Create")]
     public async Task<ActionResult> Create (Client client)
     {
        var newClient = await _service.Create(client);
@@ -45,7 +45,7 @@ public class ClientController : ControllerBase
         return CreatedAtAction(nameof(GetById), new {id = newClient.Id}, newClient);
     }
 
-    [HttpPut ("{id}")]
+    [HttpPut("Update/{id}")]
     public async Task<IActionResult> Update(int id, Client client)
     {
         if (id != client.Id)
@@ -68,12 +68,12 @@ public class ClientController : ControllerBase
             } 
     }
 
-    [HttpDelete ("{id}")]
+    [HttpDelete("Delete/{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var existingclient = await _service.GetById(id);
         if (existingclient is null)
-            return NotFound();
+            return ClientNotFound(id);
         /*
         _context.Clients.Remove(existingclient);
         _context.SaveChanges();
