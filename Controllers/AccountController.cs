@@ -11,23 +11,26 @@ namespace BankAPI.Controllers;
 public class AccountController : ControllerBase
 {
     //para modificar la base de datos
-    private readonly AccountService _service;
-    public AccountController(AccountService account)
+    private readonly AccountService accountService;
+    private readonly AccountTypeService accountTypeService;
+
+    public AccountController(AccountService accountService, AccountTypeService accountTypeService)
     {
-        _service = account;
+        this.accountService = accountService;
+        this.accountTypeService = accountTypeService;
     }
 
     //CRUD
     [HttpGet ("GetAll")]
-    public IEnumerable<Account> Get()
+    public async Task<IEnumerable<Account>> Get()
     {
-        return _service.GetAll();
+        return await accountService.GetAll();
     }
 
     [HttpGet("{id}")]
-     public ActionResult<Account> GetById(int id)
+     public async Task<ActionResult<Account>> GetById(int id)
     {
-        var account = _service.GetById(id);
+        var account = await accountService.GetById(id);
 
         if (account is null)
             return NotFound();
@@ -36,27 +39,44 @@ public class AccountController : ControllerBase
     }
 
     [HttpGet("GetByClientId/{ClientId}")]
-     public IEnumerable<Account> GetByClientId(int? ClientId)
+     public async Task<IEnumerable<Account>> GetByClientId(int? ClientId)
     {
-        var accounts = _service.GetByClientId(ClientId);
+        var accounts = await accountService.GetByClientId(ClientId);
 
         return accounts;
     }
 
     [HttpPost]
-    public ActionResult Create (Account account)
+    public async Task<ActionResult> Create (Account account)
     {
-        var clientExist = _service.ClientExist(account.ClientId);
+        var clientExist = await accountService.ClientExist(account.ClientId);
 
         if (clientExist == null)
-            return BadRequest("Ups!, ese cliente no existe"); 
+            return BadRequest("Ups!, ese cliente no existe");
 
-        var newAccount = _service.Create(account, clientExist);
+        string validationResult = await ValidationAccount(account);
+
+        if(!validationResult.Equals("Valid"))
+            return BadRequest(new{message = validationResult});
+
+        var newAccount =  accountService.Create(account, clientExist);
         return CreatedAtAction(nameof(GetById) ,new {id = newAccount}, newAccount);
     }
+
+    public async Task<string> ValidationAccount(Account account)
+    {
+        string result = "Valid";
+
+        var accountType = await accountTypeService.GetById(account.AccountType);
+
+        if(accountType is null)
+            result = $"El tipo de cuenta {account.AccountType} no existe";
     
+        return result;
+    }
+
     [HttpPut ("{id}/{clientId}")]
-    public IActionResult Update(int id, int clientId, Account account)
+    public async Task<IActionResult> Update(int id, int clientId, Account account)
     {
         if (id != account.Id)
             return BadRequest("No existe una cuenta con esta id!");
@@ -64,15 +84,15 @@ public class AccountController : ControllerBase
         if (clientId != account.ClientId)
             return BadRequest("No existe este cliente!");
         
-        var existingaccount = _service.GetById(account.Id);
+        var existingaccount = accountService.GetById(account.Id);
         if (existingaccount is null)
             return NotFound();
 
-        var accountToUpdate = _service.GetById(account.Id);
+        var accountToUpdate =  await accountService.GetById(account.Id);
 
         if(accountToUpdate is not null)
         {
-             _service.Update(id, clientId, account);
+            await accountService.Update(id, clientId, account);
             return NoContent();
         }else
             {
@@ -82,16 +102,16 @@ public class AccountController : ControllerBase
     }
 
     [HttpDelete ("{id}")]
-    public IActionResult Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
-        var existingaccount = _service.GetById(id);
+        var existingaccount = await accountService.GetById(id);
         if (existingaccount is null)
             return NotFound();
 
-        var accountToDelete = _service.GetById(id);
+        var accountToDelete = accountService.GetById(id);
         if (accountToDelete is not null)
         {
-            _service.Delete(id);
+            await accountService.Delete(id);
             return NoContent();
         }else  
             { 

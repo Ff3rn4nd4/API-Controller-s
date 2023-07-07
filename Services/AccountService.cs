@@ -13,46 +13,46 @@ public class AccountService
         _context = context;
     }
 
-    public IEnumerable<Account> GetAll()
+    public  async Task<IEnumerable<Account>> GetAll()
     {
-        return _context.Accounts.ToList();
+        return await _context.Accounts.ToListAsync();
     }
 
-    public Account GetById(int id)
+    public async Task<Account> GetById(int id)
     {
-        return _context.Accounts.Find(id);
+        return await _context.Accounts.FindAsync(id);
     }
 
-    public IEnumerable<Account> GetByClientId(int? ClientId)
+    public  async Task<IEnumerable<Account>> GetByClientId(int? ClientId)
     {
         if(ClientId == 0)
         {
-            return _context.Accounts.Where(a => a.ClientId == null).ToList();
+            return await _context.Accounts.Where(a => a.ClientId == null).ToListAsync();
         }else
             {
-                return _context.Accounts.Where(a => a.ClientId == ClientId).ToList();
+                return await _context.Accounts.Where(a => a.ClientId == ClientId).ToListAsync();
             }
 
     }
 
-    public Client ClientExist(int? ClientId)
+    public  async Task<Client> ClientExist(int? ClientId)
     {
-        return _context.Clients.FirstOrDefault(c => c.Id == ClientId);
+        return await _context.Clients.FirstOrDefaultAsync(c => c.Id == ClientId);
     }
 
-    public Account Create(Account newAccount, Client client)
+    public async Task<Account> Create(Account newAccount, Client client)
     {
         newAccount.Client = client;
 
         _context.Accounts.Add(newAccount);
-        _context.SaveChanges();
+        await _context.SaveChangesAsync();
 
         return newAccount;
     } 
 
-    public void Update(int id, int clientId, Account account)
+    public async Task Update(int id, int clientId, Account account)
     {
-        var existingaccount = GetById(account.Id);
+        var existingaccount = await GetById(account.Id);
         
         if(existingaccount is not null)
         {
@@ -61,18 +61,18 @@ public class AccountService
             existingaccount.ClientId = account.ClientId;
             existingaccount.Balance = account.Balance;
 
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
-        var accountDelete = GetById(id);
+        var accountDelete = await GetById(id);
 
         if (accountDelete is not null)
         {
-             _context.Accounts.Remove(accountDelete);
-            _context.SaveChanges();
+            _context.Accounts.Remove(accountDelete);
+            await _context.SaveChangesAsync();
         }
     }
 }

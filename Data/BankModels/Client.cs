@@ -11,6 +11,7 @@ public partial class Client
     {
         Accounts = new HashSet<Account>();
     }
+    
     public int Id { get; set; }
     [MaxLength(200, ErrorMessage = "El nombre no debe de exceder los 200 caracteres")]
     public string Name { get; set; } = null!;
