@@ -2,10 +2,12 @@ using BankAPI.Services;
 using BankAPI.Data.BankModels;
 using Microsoft.AspNetCore.Mvc;
 using BankAPI.Data.DTOs;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BankAPI.Controllers;
 
 //Ruteo
+[Authorize]
 [ApiController]
 [Route("[Controller]")]
 

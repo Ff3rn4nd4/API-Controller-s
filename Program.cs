@@ -1,6 +1,9 @@
+using System.Text;
 using System.Text.Json.Serialization;
 using BankAPI.Data;
 using BankAPI.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +25,20 @@ builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<AccountTypeService>();
 builder.Services.AddScoped<LoginService>();
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options => 
+        {
+            options.TokenValidationParameters = new TokenValidationParameters 
+            {
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Key"])),
+                //No validan ciertos componentes del token
+                ValidateIssuer = false,
+                ValidateAudience = false
+            };
+        });
+
+//app middlewere
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -32,6 +49,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 
