@@ -14,14 +14,35 @@ public class AccountService
         _context = context;
     }
 
-    public  async Task<IEnumerable<Account>> GetAll()
+    public  async Task<IEnumerable<AccountDtoOut>> GetAll()
     {
-        return await _context.Accounts.ToListAsync();
+        return await _context.Accounts.Select(a => new AccountDtoOut
+        {
+            Id = a.Id,
+            AccountName = a.AccountTypeNavigation.Name,
+            ClientName = a.Client.Name,
+            Balance = a.Balance,
+            RegDate = a.RegDate
+        }).ToListAsync();
     }
 
     public async Task<Account> GetById(int id)
     {
         return await _context.Accounts.FindAsync(id);
+    }
+
+     public  async Task<AccountDtoOut?> GetDtoById(int id)
+    {
+        return await _context.Accounts.
+        Where(a => a.Id == id).
+        Select(a => new AccountDtoOut
+        {
+            Id = a.Id,
+            AccountName = a.AccountTypeNavigation.Name,
+            ClientName = a.Client.Name,
+            Balance = a.Balance,
+            RegDate = a.RegDate
+        }).SingleOrDefaultAsync();
     }
 
     public  async Task<IEnumerable<Account>> GetByClientId(int? ClientId)
@@ -41,7 +62,7 @@ public class AccountService
         return await _context.Clients.FirstOrDefaultAsync(c => c.Id == ClientId);
     }*/
 
-    public async Task<Account> Create(AccountDto newAccountDto)
+    public async Task<Account> Create(AccountDtoIn newAccountDto)
     {
         var newAccount = new Account();
         //newAccount.Client = client;
@@ -56,7 +77,7 @@ public class AccountService
         return newAccount;
     } 
 
-    public async Task Update(AccountDto account)
+    public async Task Update(AccountDtoIn account)
     {
         var existingaccount = await GetById(account.Id);
         
