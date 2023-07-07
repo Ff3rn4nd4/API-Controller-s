@@ -116,11 +116,17 @@ public class AccountController : ControllerBase
        
     }
 
+    //Esta linea es solo para que el swagger no tenga problema para abrirse
+    //Ya que al no tener una etiqueta lo marcaba como un metodo ambiguo 
+    [HttpGet("NoSeEncontro")]
     public NotFoundObjectResult HandleNotFound(int id)
     {
         return NotFound(new{message = $"La cuenta con ese Id={id} no existe"});
     }
 
+    //Esta linea es solo para que el swagger no tenga problema para abrirse
+    //Ya que al no tener una etiqueta lo marcaba como un metodo ambiguo
+    [HttpPost("Validation")]
     public async Task<string> ValidationAccount(AccountDtoIn account)
     {
         string result = "Valid";

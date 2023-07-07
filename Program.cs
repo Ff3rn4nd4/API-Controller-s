@@ -20,6 +20,7 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 builder.Services.AddScoped<ClientService>();
 builder.Services.AddScoped<AccountService>();
 builder.Services.AddScoped<AccountTypeService>();
+builder.Services.AddScoped<LoginService>();
 
 var app = builder.Build();
 

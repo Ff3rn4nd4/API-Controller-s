@@ -20,6 +20,8 @@ public partial class MichuBankContext : DbContext
 
     public virtual DbSet<AccountType> AccountTypes { get; set; }
 
+    public virtual DbSet<Administrator> Administrators { get; set; }
+
     public virtual DbSet<BankTransaction> BankTransactions { get; set; }
 
     public virtual DbSet<Client> Clients { get; set; }
@@ -56,7 +58,39 @@ public partial class MichuBankContext : DbContext
             entity.ToTable("AccountType");
 
             entity.Property(e => e.Name)
+                .IsRequired()
                 .HasMaxLength(100)
+                .IsUnicode(false);
+            entity.Property(e => e.RegDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<Administrator>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__Administ__3214EC074BCC569A");
+
+            entity.ToTable("Administrator");
+
+            entity.Property(e => e.AdminType)
+                .IsRequired()
+                .HasMaxLength(30)
+                .IsUnicode(false);
+            entity.Property(e => e.Email)
+                .IsRequired()
+                .HasMaxLength(50)
+                .IsUnicode(false);
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(200)
+                .IsUnicode(false);
+            entity.Property(e => e.PhoneNumber)
+                .IsRequired()
+                .HasMaxLength(40)
+                .IsUnicode(false);
+            entity.Property(e => e.Pwd)
+                .IsRequired()
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.RegDate)
                 .HasDefaultValueSql("(getdate())")
@@ -99,10 +133,16 @@ public partial class MichuBankContext : DbContext
                 .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.Name)
+                .IsRequired()
                 .HasMaxLength(200)
                 .IsUnicode(false);
             entity.Property(e => e.PhoneNumber)
+                .IsRequired()
                 .HasMaxLength(40)
+                .IsUnicode(false);
+            entity.Property(e => e.Pwd)
+                .IsRequired()
+                .HasMaxLength(50)
                 .IsUnicode(false);
             entity.Property(e => e.RegDate)
                 .HasDefaultValueSql("(getdate())")
@@ -116,6 +156,7 @@ public partial class MichuBankContext : DbContext
             entity.ToTable("TransactionType");
 
             entity.Property(e => e.Name)
+                .IsRequired()
                 .HasMaxLength(100)
                 .IsUnicode(false);
             entity.Property(e => e.RegDate)

@@ -91,6 +91,9 @@ public class ClientController : ControllerBase
             } 
     }
 
+    //Esta linea es solo para que el swagger no tenga problema para abrirse
+    //Ya que al no tener una etiqueta lo marcaba como un metodo ambiguo
+    [HttpGet("ClienteNoSeEncontro")]
     public NotFoundObjectResult ClientNotFound(int id)
     {
         return NotFound(new { message = $"Ups!, el cliente con este ID = {id} no existe!." });
