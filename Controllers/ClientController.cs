@@ -6,9 +6,11 @@ using Microsoft.AspNetCore.Authorization;
 namespace BankAPI.Controllers;
 
 //Ruteo
-[Authorize]
+//[Authorize]
 [ApiController]
 [Route("Api/[Controller]")]
+//solo el admin puede controlar dos datos de los clientes
+[Authorize(Roles = "Admin")]
 
 public class ClientController : ControllerBase
 {

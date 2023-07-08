@@ -10,6 +10,8 @@ namespace BankAPI.Controllers;
 [Authorize]
 [ApiController]
 [Route("[Controller]")]
+//solo el admin puede controlar dos datos de los clientes
+[Authorize(Roles = "Admin")]
 
 public class AccountController : ControllerBase
 {
@@ -51,6 +53,7 @@ public class AccountController : ControllerBase
         return accounts;
     }
 
+    [Authorize(Policy = "SuperAdmin")]
     [HttpPost]
     public async Task<IActionResult> Create (AccountDtoIn account)
     {
@@ -68,6 +71,7 @@ public class AccountController : ControllerBase
         return CreatedAtAction(nameof(GetById) ,new {id = newAccount.Id}, newAccount);
     }
 
+    [Authorize(Policy = "SuperAdmin")]
     [HttpPut ("{id}/{clientId}")]
     public async Task<IActionResult> Update(int id, AccountDtoIn account)
     {
@@ -99,6 +103,7 @@ public class AccountController : ControllerBase
        
     }
 
+    [Authorize(Policy = "SuperAdmin")]
     [HttpDelete ("{id}")]
     public async Task<IActionResult> Delete(int id)
     {

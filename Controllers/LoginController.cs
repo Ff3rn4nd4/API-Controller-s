@@ -54,8 +54,10 @@ public class LoginController: ControllerBase
     {
         var claims = new[]
         {
+            new Claim(ClaimTypes.Role, "Admin"),
             new Claim(ClaimTypes.Name, admin.Name),
-            new Claim(ClaimTypes.Email, admin.Email)  
+            new Claim(ClaimTypes.Email, admin.Email),  
+            new Claim("AdminType", admin.AdminType)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("JWT:Key").Value)); 
@@ -75,8 +77,9 @@ public class LoginController: ControllerBase
     {
         var claims = new[]
         {
+            new Claim(ClaimTypes.Role, "Client"),
             new Claim(ClaimTypes.Name, client.Name),
-            new Claim(ClaimTypes.Email, client.Email)  
+            new Claim(ClaimTypes.Email, client.Email) 
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("JWT:Key").Value)); 
