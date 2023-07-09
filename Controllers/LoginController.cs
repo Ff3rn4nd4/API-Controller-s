@@ -65,7 +65,7 @@ public class LoginController: ControllerBase
 
         var securityToken = new JwtSecurityToken(
                                     claims: claims,
-                                    expires: DateTime.Now.AddMinutes(3),
+                                    expires: DateTime.Now.AddMinutes(60),
                                     signingCredentials: creds);
 
         string token = new JwtSecurityTokenHandler().WriteToken(securityToken);
@@ -79,7 +79,7 @@ public class LoginController: ControllerBase
         {
             new Claim(ClaimTypes.Role, "Client"),
             new Claim(ClaimTypes.Name, client.Name),
-            new Claim(ClaimTypes.Email, client.Email) 
+            new Claim(ClaimTypes.Email, client.Email)
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(config.GetSection("JWT:Key").Value)); 
@@ -87,7 +87,7 @@ public class LoginController: ControllerBase
 
         var securityToken = new JwtSecurityToken(
                                     claims: claims,
-                                    expires: DateTime.Now.AddMinutes(3),
+                                    expires: DateTime.Now.AddMinutes(60),
                                     signingCredentials: creds);
 
         string token = new JwtSecurityTokenHandler().WriteToken(securityToken);
